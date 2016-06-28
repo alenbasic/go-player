@@ -1,0 +1,14 @@
+{{define "content"}}
+<h1><a href="/movie?movie={{.CurrentFilm}}">This film</a> is currently playing!</h1>
+<form style="padding-bottom:10px" align="left" action = "/" method = "post">
+		<input type="text" id="search" placeholder="Type to search">
+        <input type="submit" name="refresh" value="Refresh File List" />
+</form>
+<div class="table-responsive">
+<table  id="omx-table" class="table table-hover table-striped">
+{{range $i, $file := .FileInfo}}
+<tr><td><a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a></td></tr>
+{{end}}
+</table>
+</div> 
+{{end}}
