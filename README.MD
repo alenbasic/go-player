@@ -1,7 +1,13 @@
 # go-player
 
-This is a conversion of sto-player to golang. 
+<h3>Introduction</h3>
+<p>go-player is a basic web interface to OMXPlayer. Compile it with <code>go build go-player.go</code> and run it with <code>./goplayer</code>. Once it's running, go to <code>http:\\ip-of-RPi:8080</code> for the fun to begin.</p>
 
-Not all of the features have been implemented yet, but it's most of the way there. All that is currently left to do is enabling to functionality to send commands to omx player (such as pausing it, or skipping forward/backward). Being able to display, start and end the films has already been implemented. Check back in a few days and I should be all done by then.
+<p>This is the go version of my other project, sto-player which is written in python and uses web.py and popen as external dependencies. If you compare the two programs with each other you'll notice there is a performance difference. On the RPi2 hardware, sto-player could sometimes take around 2 seconds to perform commands like starting or stopping a film. go-player however is pretty much instantaneous.</p>
 
-Note: Yes, I know it's rather hackish at the moment, I'll tidy it up.
+<h3>Requirements</h3>
+go-player depends has no external dependencies and uses only the go standard library, so if you have go installed, that's all you need to compile the program and get started.
+<h3>How to Use</h3>
+ You give it a list of directories and it takes care of the rest. The interface is pretty straight forward I believe, so I don't think there is much of a need of an explanation. Since there is always room for improvement, feel free to contact me regarding improvements or suggestions to the interface or the application itself.
+<h3>License</h3>
+go-player is released under the v3 of the GPL, please refer to the LICENSE file for more information.

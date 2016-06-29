@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"os"
 	"os/exec"
@@ -13,7 +14,8 @@ import (
 
 // GLOBALS DECLARED HERE
 
-var root = "/path/to/media/"
+var root = "/path/to/media"
+var command_list = map[string]string{"pause": "p", "up": "\x1b[A", "down": "\x1b[B", "left": "\x1b[D", "right": "\x1b[C"}
 var movies = MovieList{}
 var player = Player{}
 
@@ -43,6 +45,7 @@ type Player struct {
 	Paused  string
 	Name    string
 	Film    *exec.Cmd
+	Pipe    io.WriteCloser
 }
 
 func (p *Player) StartFilm(name string) {
@@ -52,6 +55,7 @@ func (p *Player) StartFilm(name string) {
 	p.Playing = true
 	p.Film = exec.Command("omxplayer", "-o", "hdmi", name)
 	p.Film.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	p.Pipe, _ = p.Film.StdinPipe()
 	p.Film.Start()
 }
 
@@ -73,15 +77,11 @@ func (p *Player) EndFilm() {
 	p.Playing = false
 }
 
-// go back here https://gobyexample.com/spawning-processes
-
 func (p *Player) SendCommandToFilm(command string) {
 	if command == "pause" {
 		p.PauseFilm()
-	} else {
-		// to be implemented
-		fmt.Println("implement me!")
 	}
+	p.Pipe.Write([]byte(command_list[command]))
 }
 
 // LOOKS FOR FILES ON THE FILESYSTEM
