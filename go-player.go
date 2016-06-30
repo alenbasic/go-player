@@ -15,7 +15,11 @@ import (
 // GLOBALS DECLARED HERE
 
 var root = "/path/to/media"
+var tmpl_dir = "./templates/"
+var templates map[string]*template.Template
+
 var command_list = map[string]string{"pause": "p", "up": "\x1b[A", "down": "\x1b[B", "left": "\x1b[D", "right": "\x1b[C"}
+
 var extension_list = [][]byte{{'.', 'm', 'k', 'v'},
 	{'.', 'm', 'p', 'g'},
 	{'.', 'a', 'v', 'i'},
@@ -106,22 +110,23 @@ func GenerateMovieList() {
 
 // THE VIEW CODE IS HERE
 
-var templates_dir = "./templates/"
+func GenerateTemplates() {
+	templates = make(map[string]*template.Template)
+	modulus := template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }}
+	templates_list := []string{"index.html", "about.html", "movie.html", "alreadyplaying.html"}
+	for _, tmpl := range templates_list {
+		templates[tmpl] = template.Must(template.New("base.html").Funcs(modulus).ParseFiles(tmpl_dir+"base.html", tmpl_dir+tmpl))
+
+	}
+}
 
 func renderTemplate(w http.ResponseWriter, tmpl string) {
-	t, err := template.ParseFiles(templates_dir+"base.html", templates_dir+tmpl)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if tmpl == "index.html" {
-		err = t.Execute(w, pageData)
-	} else if tmpl == "movie.html" {
-		err = t.Execute(w, player)
-	} else if tmpl == "alreadyplaying.html" {
-		err = t.Execute(w, pageData)
-	} else {
-		err = t.Execute(w, nil)
+	var err error
+	switch tmpl {
+	case "movie.html":
+		err = templates[tmpl].Execute(w, player)
+	default:
+		err = templates[tmpl].Execute(w, pageData)
 	}
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -182,6 +187,7 @@ func movieHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	GenerateMovieList()
+	GenerateTemplates()
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/about", aboutHandler)
