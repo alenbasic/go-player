@@ -133,7 +133,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	tmpl := "index.html"
 	if r.Method == "GET" {
-		if len(pageData.Player.FilmName) != 0 && pageData.Player.FilmName == pageData.CurrentFilm {
+		if pageData.Player.Playing {
 			tmpl = "alreadyplaying.html"
 		}
 	} else if r.Method == "POST" {
@@ -162,7 +162,7 @@ func movieHandler(w http.ResponseWriter, r *http.Request) {
 	if pageData.Player.Playing == false {
 		pageData.Player.StartFilm(film)
 	} else if pageData.Player.Playing && (film == "" || pageData.Player.FilmName == film) {
-		if len(command) != 0 && pageData.Player.Playing {
+		if len(command) != 0 {
 			if command == "kill" {
 				pageData.Player.EndFilm()
 				http.Redirect(w, r, "/", http.StatusFound)
