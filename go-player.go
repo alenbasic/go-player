@@ -21,7 +21,8 @@ var pageData = PageData{}
 
 var command_list = map[string]string{"pause": "p", "up": "\x1b[A", "down": "\x1b[B", "left": "\x1b[D", "right": "\x1b[C"}
 
-var extension_list = [][]byte{{'.', 'm', 'k', 'v'},
+var extension_list = [][]byte{
+	{'.', 'm', 'k', 'v'},
 	{'.', 'm', 'p', 'g'},
 	{'.', 'a', 'v', 'i'},
 	{'.', 'A', 'V', 'I'},
@@ -137,8 +138,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.Method == "POST" {
 		if pageData.Player.Playing {
-			player = &pageData.Player
-			currentFilm = pageData.CurrentFilm
+			player := &pageData.Player
+			currentFilm := pageData.CurrentFilm
 			pageData = PageData{}
 			GenerateMovies()
 			pageData.CurrentFilm = currentFilm
