@@ -136,14 +136,21 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			tmpl = "alreadyplaying.html"
 		}
 	} else if r.Method == "POST" {
-		pageData = PageData{}
-		GenerateMovies()
-		if len(pageData.Player.FilmName) != 0 {
-			pageData.CurrentFilm = pageData.Player.FilmName
+		if pageData.Player.Playing {
+			player = &pageData.Player
+			currentFilm = pageData.CurrentFilm
+			pageData = PageData{}
+			GenerateMovies()
+			pageData.CurrentFilm = currentFilm
+			pageData.Player = *player
+		} else {
+			pageData = PageData{}
+			GenerateMovies()
 		}
 	}
 	renderTemplate(w, tmpl)
 }
+
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "about.html")
 }

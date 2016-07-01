@@ -1,7 +1,7 @@
 # go-player
 
 <h3>Introduction</h3>
-<p>go-player is a basic web interface to OMXPlayer. Compile it with <code>go build go-player.go</code> and run it with <code>./go-player</code>. Once it's running, go to <code>http:\\ip-of-RPi:8080</code> for the fun to begin.</p>
+<p>go-player is a basic web interface to OMXPlayer. Compile it with <code>go build go-player.go</code> and run it with <code>./go-player</code>. Once it's running, go to <code>http://ip-of-RPi:8080</code> for the fun to begin.</p>
 
 <p>This is the go version of my other project, sto-player which is written in python and uses web.py and popen as external dependencies. If you compare the two programs with each other you'll notice there is a performance difference. On the RPi2 hardware, sto-player could sometimes take around 2 seconds to perform commands like starting or stopping a film. go-player however is pretty much instantaneous.</p>
 
