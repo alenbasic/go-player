@@ -17,6 +17,7 @@ import (
 var root = "/path/to/media"
 var tmpl_dir = "./templates/"
 var templates map[string]*template.Template
+var pageData = PageData{}
 
 var command_list = map[string]string{"pause": "p", "up": "\x1b[A", "down": "\x1b[B", "left": "\x1b[D", "right": "\x1b[C"}
 
@@ -26,9 +27,6 @@ var extension_list = [][]byte{{'.', 'm', 'k', 'v'},
 	{'.', 'A', 'V', 'I'},
 	{'.', 'm', '4', 'v'},
 	{'.', 'm', 'p', '4'}}
-
-var pageData = PageData{}
-var player = Player{}
 
 // THE MODEL CODE IS HERE
 
@@ -40,6 +38,7 @@ type Movie struct {
 type PageData struct {
 	MovieList   []Movie
 	CurrentFilm string
+	Player      Player
 }
 
 // PLAYER OBJECT STRUCT AND METHODS
@@ -74,7 +73,7 @@ func (p *Player) PauseFilm() {
 func (p *Player) EndFilm() {
 	pgid, err := syscall.Getpgid(p.Film.Process.Pid)
 	if err == nil {
-		syscall.Kill(-pgid, 15) // note the minus sign
+		syscall.Kill(-pgid, 15)
 	}
 	p.FilmName = ""
 	pageData.CurrentFilm = ""
@@ -99,11 +98,10 @@ func visit(path string, f os.FileInfo, err error) error {
 			pageData.MovieList = append(pageData.MovieList, movie)
 		}
 	}
-
 	return nil
 }
 
-func GenerateMovieList() {
+func GenerateMovies() {
 	filepath.Walk(root, visit)
 	fmt.Printf("file import complete: %d files imported\n", len(pageData.MovieList))
 }
@@ -115,19 +113,14 @@ func GenerateTemplates() {
 	modulus := template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }}
 	templates_list := []string{"index.html", "about.html", "movie.html", "alreadyplaying.html"}
 	for _, tmpl := range templates_list {
-		templates[tmpl] = template.Must(template.New("base.html").Funcs(modulus).ParseFiles(tmpl_dir+"base.html", tmpl_dir+tmpl))
+		t := template.New("base.html").Funcs(modulus)
+		templates[tmpl] = template.Must(t.ParseFiles(tmpl_dir+"base.html", tmpl_dir+tmpl))
 
 	}
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string) {
-	var err error
-	switch tmpl {
-	case "movie.html":
-		err = templates[tmpl].Execute(w, player)
-	default:
-		err = templates[tmpl].Execute(w, pageData)
-	}
+	err := templates[tmpl].Execute(w, pageData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -137,22 +130,19 @@ func renderTemplate(w http.ResponseWriter, tmpl string) {
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	method := r.Method
-	if method == "GET" {
-		if len(player.FilmName) != 0 && player.FilmName == pageData.CurrentFilm {
-			renderTemplate(w, "alreadyplaying.html")
-		} else {
-			renderTemplate(w, "index.html")
+	tmpl := "index.html"
+	if r.Method == "GET" {
+		if len(pageData.Player.FilmName) != 0 && pageData.Player.FilmName == pageData.CurrentFilm {
+			tmpl = "alreadyplaying.html"
 		}
-	} else if method == "POST" {
+	} else if r.Method == "POST" {
 		pageData = PageData{}
-		if len(player.FilmName) != 0 {
-			pageData.CurrentFilm = player.FilmName
+		GenerateMovies()
+		if len(pageData.Player.FilmName) != 0 {
+			pageData.CurrentFilm = pageData.Player.FilmName
 		}
-		GenerateMovieList()
-		renderTemplate(w, "index.html")
 	}
-
+	renderTemplate(w, tmpl)
 }
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "about.html")
@@ -161,32 +151,29 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 func movieHandler(w http.ResponseWriter, r *http.Request) {
 	command := r.URL.Query().Get("command")
 	film := r.URL.Query().Get("movie")
-	if player.Playing == false {
-		player.StartFilm(film)
-	} else if player.Playing == true && len(command) == 0 {
-		if player.FilmName != film {
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-	} else {
-		if len(command) != 0 {
+	if pageData.Player.Playing == false {
+		pageData.Player.StartFilm(film)
+	} else if pageData.Player.Playing && (film == "" || pageData.Player.FilmName == film) {
+		if len(command) != 0 && pageData.Player.Playing {
 			if command == "kill" {
-				player.EndFilm()
+				pageData.Player.EndFilm()
 				http.Redirect(w, r, "/", http.StatusFound)
 				return
 			} else {
-				player.SendCommandToFilm(command)
+				pageData.Player.SendCommandToFilm(command)
 			}
 		}
+	} else {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
 	}
-
 	renderTemplate(w, "movie.html")
 }
 
 // IT ALL STARTS HERE
 
 func main() {
-	GenerateMovieList()
+	GenerateMovies()
 	GenerateTemplates()
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", indexHandler)
