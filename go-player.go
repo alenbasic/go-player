@@ -43,12 +43,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.Method == "POST" {
 		if pageData.Player.Playing {
-			player := &pageData.Player
+			player := pageData.Player
 			currentFilm := pageData.CurrentFilm
 			pageData = PageData{}
 			GenerateMovies()
 			pageData.CurrentFilm = currentFilm
-			pageData.Player = *player
+			pageData.Player = player
+			tmpl = "alreadyplaying.html"
 		} else {
 			pageData = PageData{}
 			GenerateMovies()
