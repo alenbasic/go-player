@@ -46,9 +46,8 @@ func (p *Player) EndFilm() error {
 		p.FilmName = ""
 		pageData.CurrentFilm = ""
 		p.Playing = false
-	} else {
-		return err
 	}
+	return err
 }
 
 func (p *Player) SendCommandToFilm(command string) error {
