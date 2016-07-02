@@ -73,14 +73,14 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func movieHandler(w http.ResponseWriter, r *http.Request) {
-	err error
+	var err error
 	command := r.URL.Query().Get("command")
 	film := r.URL.Query().Get("movie")
 	if pageData.Player.Playing == false {
 		err = pageData.Player.StartFilm(film)
 		if err == nil {
 			pageData.CurrentFilm = film
-		}	
+		}
 	} else if pageData.Player.Playing && (film == "" || pageData.Player.FilmName == film) {
 		if len(command) != 0 {
 			if command == "kill" {
@@ -98,7 +98,7 @@ func movieHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err == nil {
-	renderTemplate(w, "movie.html")
+		renderTemplate(w, "movie.html")
 	} else {
 		log.Printf("Following error occurred: %v\n", err)
 	}
