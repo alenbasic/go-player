@@ -17,14 +17,17 @@ type Player struct {
 	PipeIn   io.WriteCloser
 }
 
-func (p *Player) StartFilm(name string) {
+func (p *Player) StartFilm(name string) error {
 	p.FilmName = name
 	p.Paused = "Pause"
 	p.Playing = true
 	p.Film = exec.Command("omxplayer", "-o", "hdmi", name)
 	p.Film.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
-	p.PipeIn, _ = p.Film.StdinPipe()
-	p.Film.Start()
+	p.PipeIn, err = p.Film.StdinPipe()
+	if err == nil {
+		err = p.Film.Start()
+	}
+	return err
 }
 
 func (p *Player) PauseFilm() {
@@ -35,19 +38,22 @@ func (p *Player) PauseFilm() {
 	}
 }
 
-func (p *Player) EndFilm() {
+func (p *Player) EndFilm() error {
 	pgid, err := syscall.Getpgid(p.Film.Process.Pid)
 	if err == nil {
 		syscall.Kill(-pgid, 15)
+		p.FilmName = ""
+		pageData.CurrentFilm = ""
+		p.Playing = false
+	} else {
+		return err
 	}
-	p.FilmName = ""
-	pageData.CurrentFilm = ""
-	p.Playing = false
 }
 
-func (p *Player) SendCommandToFilm(command string) {
+func (p *Player) SendCommandToFilm(command string) error {
 	if command == "pause" {
 		p.PauseFilm()
 	}
-	p.PipeIn.Write([]byte(command_list[command]))
+	_, err := p.PipeIn.Write([]byte(command_list[command]))
+	return err
 }
