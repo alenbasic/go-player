@@ -18,6 +18,7 @@ type Player struct {
 }
 
 func (p *Player) StartFilm(name string) error {
+	var err error
 	p.FilmName = name
 	p.Paused = "Pause"
 	p.Playing = true
