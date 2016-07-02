@@ -42,12 +42,13 @@ func visit(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
-func GenerateMovies() error {
-	err := filepath.Walk(root, visit)
-	if err == nil {
-		fmt.Printf("file import complete: %d files imported\n", len(pageData.MovieList))
-		return nil
-	} else {
+func GenerateMovies(path string) error {
+	err := filepath.Walk(path, visit)
+	if err != nil {
 		return err
+	} else if len(pageData.MovieList) <= 0 {
+		return fmt.Errorf("No media files were found in the given path: %s", path)
 	}
+	fmt.Printf("file import complete: %d files imported\n", len(pageData.MovieList))
+	return err
 }

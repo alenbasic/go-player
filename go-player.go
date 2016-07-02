@@ -8,7 +8,7 @@ import (
 
 // GLOBALS DECLARED HERE
 
-var root = "/path/to/media"
+var media_dir = "/path/to/media"
 var tmpl_dir = "./templates/"
 var templates map[string]*template.Template
 var pageData = PageData{}
@@ -49,7 +49,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 				player := pageData.Player
 				currentFilm := pageData.CurrentFilm
 				pageData = PageData{}
-				err = GenerateMovies()
+				err = GenerateMovies(media_dir)
 				if err == nil {
 					pageData.CurrentFilm = currentFilm
 					pageData.Player = player
@@ -57,7 +57,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			} else {
 				pageData = PageData{}
-				err = GenerateMovies()
+				err = GenerateMovies(media_dir)
 			}
 		}
 		if err == nil {
@@ -107,7 +107,7 @@ func movieHandler(w http.ResponseWriter, r *http.Request) {
 // IT ALL STARTS HERE
 
 func main() {
-	err := GenerateMovies()
+	err := GenerateMovies(media_dir)
 	if err == nil {
 		GenerateTemplates()
 		http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -116,7 +116,6 @@ func main() {
 		http.HandleFunc("/movie", movieHandler)
 		http.ListenAndServe(":8080", nil)
 	} else {
-		log.Printf("Following error occurred: %v\n", err)
+		log.Printf("%v", err)
 	}
-
 }
