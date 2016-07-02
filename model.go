@@ -43,10 +43,11 @@ func visit(path string, f os.FileInfo, err error) error {
 }
 
 func GenerateMovies() error {
-err := filepath.Walk(root, visit) 
-if err == nil {
-	fmt.Printf("file import complete: %d files imported\n", len(pageData.MovieList))
-	return nil
-} else {
-	return err
+	err := filepath.Walk(root, visit)
+	if err == nil {
+		fmt.Printf("file import complete: %d files imported\n", len(pageData.MovieList))
+		return nil
+	} else {
+		return err
+	}
 }
