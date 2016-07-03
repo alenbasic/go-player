@@ -22,7 +22,6 @@ func GenerateTemplates() {
 	for _, tmpl := range templates_list {
 		t := template.New("base.html").Funcs(modulus)
 		templates[tmpl] = template.Must(t.ParseFiles(tmpl_dir+"base.html", tmpl_dir+tmpl))
-
 	}
 }
 
@@ -37,35 +36,36 @@ func renderTemplate(w http.ResponseWriter, tmpl string) {
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
-
-	if err == nil {
-		tmpl := "index.html"
-		if r.Method == "GET" {
-			if pageData.Player.Playing {
-				tmpl = "alreadyplaying.html"
-			}
-		} else if r.Method == "POST" {
-			if pageData.Player.Playing {
-				player := pageData.Player
-				currentFilm := pageData.CurrentFilm
-				pageData = PageData{}
-				err = GenerateMovies(media_dir)
-				if err == nil {
-					pageData.CurrentFilm = currentFilm
-					pageData.Player = player
-					tmpl = "alreadyplaying.html"
-				}
-			} else {
-				pageData = PageData{}
-				err = GenerateMovies(media_dir)
-			}
+	if err != nil {
+		panic(err)
+	}
+	tmpl := "index.html"
+	switch r.Method {
+	case "GET":
+		if pageData.Player.Playing {
+			tmpl = "alreadyplaying.html"
 		}
-		if err == nil {
-			renderTemplate(w, tmpl)
+	case "POST":
+		if pageData.Player.Playing {
+			player := pageData.Player
+			currentFilm := pageData.CurrentFilm
+			pageData = PageData{}
+			err = GenerateMovies(media_dir)
+			if err != nil {
+				panic(err)
+			}
+			pageData.CurrentFilm = currentFilm
+			pageData.Player = player
+			tmpl = "alreadyplaying.html"
 		} else {
-			log.Printf("Following error occurred: %v\n", err)
+			pageData = PageData{}
+			err = GenerateMovies(media_dir)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
+	renderTemplate(w, tmpl)
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
@@ -116,6 +116,6 @@ func main() {
 		http.HandleFunc("/movie", movieHandler)
 		http.ListenAndServe(":8080", nil)
 	} else {
-		log.Printf("%v", err)
+		panic(err)
 	}
 }
