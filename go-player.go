@@ -73,35 +73,41 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func movieHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
 	command := r.URL.Query().Get("command")
 	film := r.URL.Query().Get("movie")
+
 	if pageData.Player.Playing == false {
-		err = pageData.Player.StartFilm(film)
-		if err == nil {
-			pageData.CurrentFilm = film
+		if film == "" {
+			log.Println("No film was selected")
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
 		}
+		err := pageData.Player.StartFilm(film)
+		if err != nil {
+			log.Printf("Following error occurred: %v\n", err)
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
+		pageData.CurrentFilm = film
 	} else if pageData.Player.Playing && (film == "" || pageData.Player.FilmName == film) {
-		if len(command) != 0 {
-			if command == "kill" {
-				err = pageData.Player.EndFilm()
-				if err == nil {
-					http.Redirect(w, r, "/", http.StatusFound)
-					return
-				}
-			} else {
-				err = pageData.Player.SendCommandToFilm(command)
+		if command == "kill" {
+			err := pageData.Player.EndFilm()
+			if err != nil {
+				log.Printf("Following error occurred: %v\n", err)
+			}
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		} else if command != "" {
+			err := pageData.Player.SendCommandToFilm(command)
+			if err != nil {
+				log.Printf("Following error occurred: %v\n", err)
 			}
 		}
 	} else {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
-	if err == nil {
-		renderTemplate(w, "movie.html")
-	} else {
-		log.Printf("Following error occurred: %v\n", err)
-	}
+	renderTemplate(w, "movie.html")
 }
 
 // IT ALL STARTS HERE
