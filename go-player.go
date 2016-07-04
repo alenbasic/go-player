@@ -8,20 +8,20 @@ import (
 
 // GLOBALS DECLARED HERE
 
-var media_dir = "/path/to/media"
-var tmpl_dir = "./templates/"
+var mediaDir = "/path/to/media"
+var tmplDir = "./templates/"
 var templates map[string]*template.Template
 var pageData = PageData{}
 
 // THE VIEW CODE IS HERE
 
-func GenerateTemplates() {
+func generateTemplates() {
 	templates = make(map[string]*template.Template)
 	modulus := template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }}
-	templates_list := []string{"index.html", "about.html", "movie.html", "alreadyplaying.html"}
-	for _, tmpl := range templates_list {
+	templatesList := []string{"index.html", "about.html", "movie.html", "alreadyplaying.html"}
+	for _, tmpl := range templatesList {
 		t := template.New("base.html").Funcs(modulus)
-		templates[tmpl] = template.Must(t.ParseFiles(tmpl_dir+"base.html", tmpl_dir+tmpl))
+		templates[tmpl] = template.Must(t.ParseFiles(tmplDir+"base.html", tmplDir+tmpl))
 	}
 }
 
@@ -50,7 +50,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			player := pageData.Player
 			currentFilm := pageData.CurrentFilm
 			pageData = PageData{}
-			err = GenerateMovies(media_dir)
+			err = GenerateMovies(mediaDir)
 			if err != nil {
 				panic(err)
 			}
@@ -59,7 +59,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			tmpl = "alreadyplaying.html"
 		} else {
 			pageData = PageData{}
-			err = GenerateMovies(media_dir)
+			err = GenerateMovies(mediaDir)
 			if err != nil {
 				panic(err)
 			}
@@ -113,9 +113,9 @@ func movieHandler(w http.ResponseWriter, r *http.Request) {
 // IT ALL STARTS HERE
 
 func main() {
-	err := GenerateMovies(media_dir)
+	err := generateMovies(mediaDir)
 	if err == nil {
-		GenerateTemplates()
+		generateTemplates()
 		http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 		http.HandleFunc("/", indexHandler)
 		http.HandleFunc("/about", aboutHandler)

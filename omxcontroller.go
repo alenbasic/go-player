@@ -7,7 +7,7 @@ import (
 	"syscall"
 )
 
-var command_list = map[string]string{"pause": "p", "up": "\x1b[A", "down": "\x1b[B", "left": "\x1b[D", "right": "\x1b[C"}
+var commandList = map[string]string{"pause": "p", "up": "\x1b[A", "down": "\x1b[B", "left": "\x1b[D", "right": "\x1b[C"}
 
 type Player struct {
 	Playing  bool
@@ -54,6 +54,6 @@ func (p *Player) SendCommandToFilm(command string) error {
 	if command == "pause" {
 		p.PauseFilm()
 	}
-	_, err := p.PipeIn.Write([]byte(command_list[command]))
+	_, err := p.PipeIn.Write([]byte(commandList[command]))
 	return err
 }

@@ -22,7 +22,7 @@ type PageData struct {
 
 // LOOKS FOR FILES ON THE FILESYSTEM
 
-var extension_list = [][]byte{
+var extensionList = [][]byte{
 	{'.', 'm', 'k', 'v'},
 	{'.', 'm', 'p', 'g'},
 	{'.', 'a', 'v', 'i'},
@@ -33,8 +33,8 @@ var extension_list = [][]byte{
 func visit(path string, f os.FileInfo, err error) error {
 	bpath := []byte(path)
 	bpath = bpath[len(bpath)-4:]
-	for i := 0; i < len(extension_list); i++ {
-		if reflect.DeepEqual(bpath, extension_list[i]) {
+	for i := 0; i < len(extensionList); i++ {
+		if reflect.DeepEqual(bpath, extensionList[i]) {
 			movie := Movie{path, f.Name()}
 			pageData.MovieList = append(pageData.MovieList, movie)
 		}
@@ -42,7 +42,7 @@ func visit(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
-func GenerateMovies(path string) error {
+func generateMovies(path string) error {
 	err := filepath.Walk(path, visit)
 	if err != nil {
 		return err
