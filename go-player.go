@@ -50,7 +50,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			player := pageData.Player
 			currentFilm := pageData.CurrentFilm
 			pageData = PageData{}
-			err = GenerateMovies(mediaDir)
+			err = generateMovies(mediaDir)
 			if err != nil {
 				panic(err)
 			}
@@ -59,7 +59,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			tmpl = "alreadyplaying.html"
 		} else {
 			pageData = PageData{}
-			err = GenerateMovies(mediaDir)
+			err = generateMovies(mediaDir)
 			if err != nil {
 				panic(err)
 			}
