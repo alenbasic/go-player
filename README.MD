@@ -4,7 +4,7 @@
 
 ![alt tag](http://i.imgur.com/SjbwDFJ.gif)
 
-<p>go-player is a basic web interface to [omxplayer](http://elinux.org/Omxplayer) on the Raspberry Pi. 
+<p>go-player is a basic web interface to <a href="http://elinux.org/Omxplayer">omxplayer</a> on the Raspberry Pi. 
 You give it a filepath where you store all your video files and it will find anything ending in an extension put
 in the extension list and then display all those files on a webpage for you to be able to search through and then 
 click on to start the video. From there you can then send commands to the film (such as pausing, fast forwarding, 
