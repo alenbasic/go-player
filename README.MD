@@ -2,6 +2,8 @@
 
 <h3>Introduction</h3>
 
+[img]http://i.imgur.com/SjbwDFJ.gif[/img]
+
 <p>go-player is a basic web interface to omxplayer. You give it a filepath where you store all your video files and it will find anything ending in an extension put in the extension list and then display all those files on a webpage for you to be able to search through and then click on to start the video. From there you can then send commands to the film (such as pausing, fast forwarding, rewinding and of course stopping the film completely).
 
 <h3>Building and Installing</h3>
@@ -16,7 +18,7 @@ After you've downloaded it, cd into the directory and compile it with <code>go b
 <li>Being more robust in error handling. I’m currently having the app log more and more errors (where appropriate) to help troubleshoot issues as they happen, but it’d be nice to give this information through the web page itself rather than via the console (once again, where appropriate).</li>
 <li>Writing up some unit (and other kinds of) tests. I think this is an important skill for me to work on and I believe that having a TDD mindset would be beneficial to me. Furthermore, it will save me manually having to test changes as I make them (which is a bit tedious as it involves me deploying it to my RPi, compiling it and then trying each of the pages out et cetera).</li>
 <li>Better mobile support. Right now it looks a bit <em>meh</em> on anything other than a desktop/laptop which suits my needs but it really wouldn’t be a whole lot more effort to make it play ball with mobile.</li>
-<li>Create a GIF of the web page in action. I know I often look for previews of apps before I give them a go and will try an app that I’ve seen a preview of every time over one that’s only got documentation. This will involve some screen capture and editing. I’ll get to it at some point.</li>
+<li><strike>Create a GIF of the web page in action. I know I often look for previews of apps before I give them a go and will try an app that I’ve seen a preview of every time over one that’s only got documentation. This will involve some screen capture and editing. I’ll get to it at some point.</strike></li>
 </ul>
 
 
