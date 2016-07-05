@@ -29,6 +29,7 @@ func generateTemplates() {
 func renderTemplate(w http.ResponseWriter, tmpl string) {
 	err := templates[tmpl].Execute(w, pageData)
 	if err != nil {
+		log.Printf("The follwing error occurred: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
