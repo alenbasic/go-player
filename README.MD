@@ -20,9 +20,6 @@ set up to look for a relative path (easily changeable of course in the code).</p
 <h3>To Do</h3>
 <p>Some ideas I have in mind are (ordered somewhat in level of interest/priority):</p>
 <ul>
-<li><strike>The ability to add locations from within the web app itself. Right now it’s hard coded into the app 
-before compilation. I was considering having a command line argument, but since I’ve sorta designed this to be run 
-24/7 it makes more sense to be more flexible and have this looked after through the web interface. </strike></li>
 <li>Related to this, it would probably be nice to clean up file names from within the interface. This is sorta 
 breaking the UNIX philosophy here having an app do one thing and doing it well, and it would then require the app 
 having more control over your system which makes me a bit more uncomfortable. This might evolve into an alias type 
@@ -36,9 +33,6 @@ changes as I make them (which is a bit tedious as it involves me deploying it to
 trying each of the pages out et cetera).</li>
 <li>Better mobile support. Right now it looks a bit <em>meh</em> on anything other than a desktop/laptop which suits 
 my needs but it really wouldn’t be a whole lot more effort to make it play ball with mobile.</li>
-<li><strike>Create a GIF of the web page in action. I know I often look for previews of apps before I give them a go 
-and will try an app that I’ve seen a preview of every time over one that’s only got documentation. This will involve 
-some screen capture and editing. I’ll get to it at some point.</strike></li>
 </ul>
 
 
