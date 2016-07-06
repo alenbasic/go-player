@@ -20,10 +20,6 @@ set up to look for a relative path (easily changeable of course in the code).</p
 <h3>To Do</h3>
 <p>Some ideas I have in mind are (ordered somewhat in level of interest/priority):</p>
 <ul>
-<li>Related to this, it would probably be nice to clean up file names from within the interface. This is sorta 
-breaking the UNIX philosophy here having an app do one thing and doing it well, and it would then require the app 
-having more control over your system which makes me a bit more uncomfortable. This might evolve into an alias type 
-system instead. We’ll see.</li>
 <li>Being more robust in error handling. I’m currently having the app log more and more errors (where appropriate) 
 to help troubleshoot issues as they happen, but it’d be nice to give this information through the web page itself 
 rather than via the console (once again, where appropriate).</li>
