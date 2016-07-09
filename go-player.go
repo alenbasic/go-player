@@ -34,6 +34,22 @@ func renderTemplate(w http.ResponseWriter, tmpl string) {
 	}
 }
 
+func refreshList() error {
+	if pageData.Player.Playing {
+		player := pageData.Player
+		currentFilm := pageData.CurrentFilm
+		pageData = PageData{}
+		err := generateMovies(mediaDir)
+		pageData.CurrentFilm = currentFilm
+		pageData.Player = player
+		return err
+	}
+	pageData = PageData{}
+	err := generateMovies(mediaDir)
+	return err
+
+}
+
 // HANDLERS ARE HERE
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,30 +61,16 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	tmpl := "index.html"
-	switch r.Method {
-	case "GET":
-		if pageData.Player.Playing {
-			tmpl = "alreadyplaying.html"
-		}
-	case "POST":
-		if pageData.Player.Playing {
-			player := pageData.Player
-			currentFilm := pageData.CurrentFilm
-			pageData = PageData{}
-			err = generateMovies(mediaDir)
-			if err != nil {
-				panic(err)
-			}
-			pageData.CurrentFilm = currentFilm
-			pageData.Player = player
-			tmpl = "alreadyplaying.html"
-		} else {
-			pageData = PageData{}
-			err = generateMovies(mediaDir)
-			if err != nil {
-				panic(err)
-			}
+	var tmpl string
+	if pageData.Player.Playing {
+		tmpl = "alreadyplaying.html"
+	} else {
+		tmpl = "index.html"
+	}
+	if r.Method == "POST" {
+		err := refreshList()
+		if err != nil {
+			panic(err)
 		}
 	}
 	renderTemplate(w, tmpl)
@@ -86,7 +88,7 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method == "POST" {
 		mediaDir = r.Form["filepath"][0]
-		if err := generateMovies(mediaDir); err != nil {
+		if err := refreshList(); err != nil {
 			tmpl = "nothingfound.html"
 		} else {
 			firstStart = false
