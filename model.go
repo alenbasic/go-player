@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 )
 
 // THE MODEL CODE IS HERE
@@ -26,12 +27,11 @@ var extensionList = [][]byte{
 	{'.', 'm', 'k', 'v'},
 	{'.', 'm', 'p', 'g'},
 	{'.', 'a', 'v', 'i'},
-	{'.', 'A', 'V', 'I'},
 	{'.', 'm', '4', 'v'},
 	{'.', 'm', 'p', '4'}}
 
 func visit(path string, f os.FileInfo, err error) error {
-	bpath := []byte(path)
+	bpath := []byte(strings.ToLower(path))
 	bpath = bpath[len(bpath)-4:]
 	for i := 0; i < len(extensionList); i++ {
 		if reflect.DeepEqual(bpath, extensionList[i]) {
