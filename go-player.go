@@ -83,7 +83,6 @@ func renderTemplate(pageStruct interface{}, w http.ResponseWriter, tmpl string) 
 	} else {
 		err = templates[tmpl].Execute(w, pageStruct)
 	}
-
 	if err != nil {
 		log.Printf("The follwing error occurred: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
