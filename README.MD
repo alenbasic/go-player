@@ -18,18 +18,7 @@ You can move the directory to wherever you want just make sure you include the H
 set up to look for a relative path (easily changeable of course in the code).</p>
 
 <h3>To Do</h3>
-<p>Some ideas I have in mind are (ordered somewhat in level of interest/priority):</p>
-<ul>
-<li>Being more robust in error handling. I’m currently having the app log more and more errors (where appropriate) 
-to help troubleshoot issues as they happen, but it’d be nice to give this information through the web page itself 
-rather than via the console (once again, where appropriate).</li>
-<li>Writing up some unit (and other kinds of) tests. I think this is an important skill for me to work on and I 
-believe that having a TDD mindset would be beneficial to me. Furthermore, it will save me manually having to test 
-changes as I make them (which is a bit tedious as it involves me deploying it to my RPi, compiling it and then 
-trying each of the pages out et cetera).</li>
-<li>Better mobile support. Right now it looks a bit <em>meh</em> on anything other than a desktop/laptop which suits 
-my needs but it really wouldn’t be a whole lot more effort to make it play ball with mobile.</li>
-</ul>
+<p>Check the issues tracker for feature implementations, bugs and so on.</p>
 
 
 <h3>Background</h3>
