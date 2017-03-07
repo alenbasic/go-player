@@ -8,4 +8,9 @@ just come back to this page via the navbar at top and enter in a new location.</
 		<input type="text" name="filepath" id="search" placeholder="/path/to/media">
         <input type="submit" name="submit" value="Submit" />
 </form>
+<table class="table table-hover table-striped">
+{{range $index, $filePath := .MediaDirs}}
+<tr><td>{{$filePath}}</td></tr>
+{{end}}
+</table>
 {{end}}

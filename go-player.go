@@ -13,13 +13,17 @@ import (
 
 // GLOBALS DECLARED HERE
 
-var mediaDir string
+var filePaths = MediaDir{}
 var tmplDir = "./templates/"
 var templates map[string]*template.Template
 var pageData = PageData{}
 var firstStart = true
 
 // THE MODEL CODE IS HERE
+
+type MediaDir struct {
+	MediaDirs []string
+}
 
 type Movie struct {
 	FullFilePath string
@@ -53,15 +57,21 @@ func visit(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
-func generateMovies(path string) error {
-	err := filepath.Walk(path, visit)
-	if err != nil {
-		return err
-	} else if len(pageData.MovieList) <= 0 {
-		return fmt.Errorf("No media files were found in the given path: %s", path)
+func generateMovies(filePaths []string) error {
+	if len(filePaths) > 0 {
+		for _, path := range filePaths {
+			err := filepath.Walk(path, visit)
+			if err != nil {
+				return err
+			} else if len(pageData.MovieList) <= 0 {
+				return fmt.Errorf("No media files were found in the given path: %s", path)
+			}
+		}
+	} else {
+		return fmt.Errorf("No file paths to process.")
 	}
 	fmt.Printf("file import complete: %d files imported\n", len(pageData.MovieList))
-	return err
+	return nil
 }
 
 // THE VIEW CODE IS HERE
@@ -94,13 +104,13 @@ func refreshList() error {
 		player := pageData.Player
 		currentFilm := pageData.CurrentFilm
 		pageData = PageData{}
-		err := generateMovies(mediaDir)
+		err := generateMovies(filePaths.MediaDirs)
 		pageData.CurrentFilm = currentFilm
 		pageData.Player = player
 		return err
 	}
 	pageData = PageData{}
-	err := generateMovies(mediaDir)
+	err := generateMovies(filePaths.MediaDirs)
 	return err
 
 }
@@ -142,7 +152,7 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	if r.Method == "POST" {
-		mediaDir = r.Form["filepath"][0]
+		filePaths.MediaDirs = append(filePaths.MediaDirs, r.Form["filepath"][0])
 		if err := refreshList(); err != nil {
 			tmpl = "nothingfound.html"
 		} else {
@@ -151,7 +161,7 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	renderTemplate(nil, w, tmpl)
+	renderTemplate(filePaths, w, tmpl)
 }
 
 func movieHandler(w http.ResponseWriter, r *http.Request) {
@@ -202,5 +212,4 @@ func main() {
 	http.HandleFunc("/setup", setupHandler)
 	http.HandleFunc("/movie", movieHandler)
 	http.ListenAndServe(":8080", nil)
-
 }

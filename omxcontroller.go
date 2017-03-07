@@ -3,6 +3,7 @@ package main
 
 import (
 	"io"
+	"os"
 	"os/exec"
 	"syscall"
 )
@@ -26,6 +27,7 @@ func (p *Player) StartFilm(name string) error {
 	p.Film.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	p.PipeIn, err = p.Film.StdinPipe()
 	if err == nil {
+		p.Film.Stdout = os.Stdout
 		err = p.Film.Start()
 	}
 	return err
