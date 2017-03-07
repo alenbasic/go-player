@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -63,12 +64,13 @@ func generateMovies(filePaths []string) error {
 			err := filepath.Walk(path, visit)
 			if err != nil {
 				return err
-			} else if len(pageData.MovieList) <= 0 {
-				return fmt.Errorf("No media files were found in the given path: %s", path)
 			}
 		}
 	} else {
 		return fmt.Errorf("No file paths to process.")
+	}
+	if len(pageData.MovieList) <= 0 {
+		return fmt.Errorf("No media files were found in the given paths: %s", filePaths)
 	}
 	fmt.Printf("file import complete: %d files imported\n", len(pageData.MovieList))
 	return nil
@@ -152,14 +154,34 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	if r.Method == "POST" {
-		filePaths.MediaDirs = append(filePaths.MediaDirs, r.Form["filepath"][0])
-		if err := refreshList(); err != nil {
-			tmpl = "nothingfound.html"
+		if _, ok := r.Form["submitFilePathButton"]; ok {
+			filePaths.MediaDirs = append(filePaths.MediaDirs, r.Form["filepath"][0])
+			if err := refreshList(); err != nil {
+				tmpl = "nothingfound.html"
+			} else {
+				firstStart = false
+				http.Redirect(w, r, "/", http.StatusFound)
+				return
+			}
 		} else {
-			firstStart = false
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
+			if i, err := strconv.Atoi(r.Form["deleteRecord"][0]); err == nil {
+				filePaths.MediaDirs = append(filePaths.MediaDirs[:i], filePaths.MediaDirs[i+1:]...)
+				if len(filePaths.MediaDirs) == 0 {
+					firstStart = true
+					http.Redirect(w, r, "/", http.StatusFound)
+					return
+				} else if err := refreshList(); err != nil {
+					tmpl = "nothingfound.html"
+				} else {
+					firstStart = false
+					http.Redirect(w, r, "/", http.StatusFound)
+					return
+				}
+			} else {
+				panic(err)
+			}
 		}
+
 	}
 	renderTemplate(filePaths, w, tmpl)
 }
