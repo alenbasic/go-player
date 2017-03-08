@@ -45,4 +45,4 @@ is much of a need of an explanation beyond that. Since there is always room for 
 regarding improvements or suggestions to the interface or the application itself.
 
 <h3>License</h3>
-go-player is released under the v3 of the GPL, please refer to the LICENSE file for more information.
+go-player is released under the MIT license, please refer to the LICENSE file for more information.
