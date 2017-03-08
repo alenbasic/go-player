@@ -154,29 +154,30 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	if r.Method == "POST" {
-		if _, ok := r.Form["submitFilePathButton"]; ok {
+		config.firstStart = false
+		if _, ok := r.Form["addFilePath"]; ok {
 			config.FilePathList = append(config.FilePathList, r.Form["filepath"][0])
-			if err := refreshList(); err != nil {
-				tmpl = "nothingfound.html"
-			} else {
-				config.firstStart = false
-			}
-		} else {
-			if i, err := strconv.Atoi(r.Form["deleteRecord"][0]); err == nil {
+			refreshCheck(&tmpl)
+		} else if _, ok := r.Form["deleteFilePath"]; ok {
+			if i, err := strconv.Atoi(r.Form["deleteFilePath"][0]); err == nil {
 				config.FilePathList = append(config.FilePathList[:i], config.FilePathList[i+1:]...)
 				if len(config.FilePathList) == 0 {
 					config.firstStart = true
-				} else if err := refreshList(); err != nil {
-					tmpl = "nothingfound.html"
-				} else {
-					config.firstStart = false
 				}
+				refreshCheck(&tmpl)
 			} else {
 				panic(err)
 			}
 		}
 	}
 	renderTemplate(config, w, tmpl)
+}
+
+func refreshCheck(tmpl *string) {
+	if err := refreshList(); err != nil {
+		config.firstStart = true
+		*tmpl = "nothingfound.html"
+	}
 }
 
 func movieHandler(w http.ResponseWriter, r *http.Request) {
