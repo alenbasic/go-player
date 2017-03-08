@@ -166,7 +166,6 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 				config.FilePathList = append(config.FilePathList[:i], config.FilePathList[i+1:]...)
 				if len(config.FilePathList) == 0 {
 					config.firstStart = true
-					return
 				} else if err := refreshList(); err != nil {
 					tmpl = "nothingfound.html"
 				} else {
