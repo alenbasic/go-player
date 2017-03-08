@@ -14,16 +14,17 @@ import (
 
 // GLOBALS DECLARED HERE
 
-var filePaths = MediaDir{}
-var tmplDir = "./templates/"
+var config = ConfigDetails{}
 var templates map[string]*template.Template
 var pageData = PageData{}
-var firstStart = true
 
 // THE MODEL CODE IS HERE
 
-type MediaDir struct {
-	MediaDirs []string
+type ConfigDetails struct {
+	firstStart        bool
+	templateDirectory string
+	FilePathList      []string
+	templateFileList  []string
 }
 
 type Movie struct {
@@ -81,10 +82,9 @@ func generateMovies(filePaths []string) error {
 func generateTemplates() {
 	templates = make(map[string]*template.Template)
 	modulus := template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }}
-	templatesList := []string{"index.html", "about.html", "movie.html", "alreadyplaying.html", "setup.html", "nothingfound.html"}
-	for _, tmpl := range templatesList {
+	for _, tmpl := range config.templateFileList {
 		t := template.New("base.html").Funcs(modulus)
-		templates[tmpl] = template.Must(t.ParseFiles(tmplDir+"base.html", tmplDir+tmpl))
+		templates[tmpl] = template.Must(t.ParseFiles(config.templateDirectory+"base.html", config.templateDirectory+tmpl))
 	}
 }
 
@@ -106,13 +106,13 @@ func refreshList() error {
 		player := pageData.Player
 		currentFilm := pageData.CurrentFilm
 		pageData = PageData{}
-		err := generateMovies(filePaths.MediaDirs)
+		err := generateMovies(config.FilePathList)
 		pageData.CurrentFilm = currentFilm
 		pageData.Player = player
 		return err
 	}
 	pageData = PageData{}
-	err := generateMovies(filePaths.MediaDirs)
+	err := generateMovies(config.FilePathList)
 	return err
 
 }
@@ -120,7 +120,7 @@ func refreshList() error {
 // HANDLERS ARE HERE
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	if firstStart {
+	if config.firstStart {
 		http.Redirect(w, r, "/setup", http.StatusFound)
 		return
 	}
@@ -155,35 +155,29 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method == "POST" {
 		if _, ok := r.Form["submitFilePathButton"]; ok {
-			filePaths.MediaDirs = append(filePaths.MediaDirs, r.Form["filepath"][0])
+			config.FilePathList = append(config.FilePathList, r.Form["filepath"][0])
 			if err := refreshList(); err != nil {
 				tmpl = "nothingfound.html"
 			} else {
-				firstStart = false
-				http.Redirect(w, r, "/", http.StatusFound)
-				return
+				config.firstStart = false
 			}
 		} else {
 			if i, err := strconv.Atoi(r.Form["deleteRecord"][0]); err == nil {
-				filePaths.MediaDirs = append(filePaths.MediaDirs[:i], filePaths.MediaDirs[i+1:]...)
-				if len(filePaths.MediaDirs) == 0 {
-					firstStart = true
-					http.Redirect(w, r, "/", http.StatusFound)
+				config.FilePathList = append(config.FilePathList[:i], config.FilePathList[i+1:]...)
+				if len(config.FilePathList) == 0 {
+					config.firstStart = true
 					return
 				} else if err := refreshList(); err != nil {
 					tmpl = "nothingfound.html"
 				} else {
-					firstStart = false
-					http.Redirect(w, r, "/", http.StatusFound)
-					return
+					config.firstStart = false
 				}
 			} else {
 				panic(err)
 			}
 		}
-
 	}
-	renderTemplate(filePaths, w, tmpl)
+	renderTemplate(config, w, tmpl)
 }
 
 func movieHandler(w http.ResponseWriter, r *http.Request) {
@@ -226,7 +220,15 @@ func movieHandler(w http.ResponseWriter, r *http.Request) {
 
 // IT ALL STARTS HERE
 
+func initConfigDetails() {
+	config.firstStart = true
+	config.templateDirectory = "./templates/"
+	config.templateFileList = append(config.templateFileList,
+		"index.html", "about.html", "movie.html", "alreadyplaying.html", "setup.html", "nothingfound.html")
+}
+
 func main() {
+	initConfigDetails()
 	generateTemplates()
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", indexHandler)
