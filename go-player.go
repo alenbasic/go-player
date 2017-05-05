@@ -12,13 +12,7 @@ import (
 	"strings"
 )
 
-// GLOBALS DECLARED HERE
-
-var config = ConfigDetails{}
-var templates map[string]*template.Template
-var pageData = PageData{}
-
-// THE MODEL CODE IS HERE
+// DATA STRUCTURES
 
 type ConfigDetails struct {
 	firstStart        bool
@@ -38,7 +32,7 @@ type PageData struct {
 	Player      Player
 }
 
-// LOOKS FOR FILES ON THE FILESYSTEM
+// GLOBALS DECLARED HERE
 
 var extensionList = [][]byte{
 	{'.', 'm', 'k', 'v'},
@@ -46,6 +40,12 @@ var extensionList = [][]byte{
 	{'.', 'a', 'v', 'i'},
 	{'.', 'm', '4', 'v'},
 	{'.', 'm', 'p', '4'}}
+
+var config = ConfigDetails{}
+var templates map[string]*template.Template
+var pageData = PageData{}
+
+// FUNCTIONS FROM HERE
 
 func visit(path string, f os.FileInfo, err error) error {
 	bpath := []byte(strings.ToLower(path))
@@ -59,20 +59,22 @@ func visit(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
-func generateMovies(filePaths []string) error {
-	if len(filePaths) > 0 {
-		for _, path := range filePaths {
+func generateMovies() error {
+	startingCounter := len(pageData.MovieList)
+	if len(config.FilePathList) > 0 {
+		for index, path := range config.FilePathList {
 			err := filepath.Walk(path, visit)
-			if err != nil {
+			if err != nil || len(pageData.MovieList) == startingCounter {
+				config.FilePathList = append(config.FilePathList[:index], config.FilePathList[index+1:]...)
+				if err == nil {
+					err = fmt.Errorf("No files found.")
+				}
 				return err
 			}
+			startingCounter = len(pageData.MovieList)
 		}
-	} else {
-		return fmt.Errorf("No file paths to process.")
 	}
-	if len(pageData.MovieList) <= 0 {
-		return fmt.Errorf("No media files were found in the given paths: %s", filePaths)
-	}
+
 	fmt.Printf("file import complete: %d files imported\n", len(pageData.MovieList))
 	return nil
 }
@@ -106,13 +108,13 @@ func refreshList() error {
 		player := pageData.Player
 		currentFilm := pageData.CurrentFilm
 		pageData = PageData{}
-		err := generateMovies(config.FilePathList)
+		err := generateMovies()
 		pageData.CurrentFilm = currentFilm
 		pageData.Player = player
 		return err
 	}
 	pageData = PageData{}
-	err := generateMovies(config.FilePathList)
+	err := generateMovies()
 	return err
 
 }
@@ -156,7 +158,17 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		config.firstStart = false
 		if _, ok := r.Form["addFilePath"]; ok {
-			config.FilePathList = append(config.FilePathList, r.Form["filepath"][0])
+			alreadyExists := false
+			newPath := r.Form["filepath"][0]
+			for _, path := range config.FilePathList {
+				if path == newPath {
+					alreadyExists = true
+					break
+				}
+			}
+			if !alreadyExists {
+				config.FilePathList = append(config.FilePathList, r.Form["filepath"][0])
+			}
 			refreshCheck(&tmpl)
 		} else if _, ok := r.Form["deleteFilePath"]; ok {
 			if i, err := strconv.Atoi(r.Form["deleteFilePath"][0]); err == nil {
