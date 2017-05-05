@@ -8,9 +8,9 @@ just come back to this page via the navbar at top and enter in a new location.</
 		<input type="text" name="filepath" id="search" placeholder="/path/to/media">
         <input type="submit" name="addFilePath" value="Submit" />
 <p></p>
-<table class="table table-hover table-striped">
+<table>
 {{range $index, $filePath := .FilePathList}}
-<tr><td>{{$filePath}}</td><td><button type="submit" name="deleteFilePath" value="{{$index}}">Delete</button></td></tr>
+<tr><td>{{$filePath}}</td><td><button class="delete-button" type="submit" name="deleteFilePath" value="{{$index}}">Delete</button></td></tr>
 {{end}}
 </table>
 </form>
