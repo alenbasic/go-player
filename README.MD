@@ -12,14 +12,14 @@ rewinding and of course stopping the film completely).
 
 <h3>Building and Installing</h3>
 	
-After you've downloaded it, cd into the directory and compile it with <code>go build</code> and run it with 
+<p>After you've downloaded it, cd into the directory and compile it with <code>go build</code> and run it with 
 <code>./go-player</code>. Once it's running, go to <code>http://ip-of-RPi:8080</code> for the fun to begin. 
 You can move the directory to wherever you want just make sure you include the HTML files with it as they're 
 set up to look for a relative path (easily changeable of course in the code).</p>
 
 <h3>To Do</h3>
-<p>Check the issues tracker for feature implementations, bugs and so on.</p>
 
+<p>Check the issues tracker for feature implementations, bugs and so on.</p>
 
 <h3>Background</h3>
 
@@ -45,4 +45,5 @@ is much of a need of an explanation beyond that. Since there is always room for 
 regarding improvements or suggestions to the interface or the application itself.
 
 <h3>License</h3>
+
 go-player is released under the MIT license, please refer to the LICENSE file for more information.
