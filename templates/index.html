@@ -5,6 +5,7 @@
 		<input type="text" id="search" placeholder="Type to search">
         <input type="submit" name="refresh" value="Refresh File List" />
 </form>
+
 <table id="omx-table">
 {{range $index, $file := .MovieList}}
 {{if mod $index 2}}<tr><td><a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a></td><td>
