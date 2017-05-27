@@ -8,8 +8,8 @@
 
 <table id="omx-table">
 {{range $index, $file := .MovieList}}
-{{if mod $index 2}}<tr><td><a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a></td><td>
-{{ else }}<a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a>
+{{if mod $index 2}}<tr><td><small><a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a></small></td><td>
+{{ else }}<small><a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a></small>
 </td></tr>
 {{ end }}
 {{end}}
