@@ -73,23 +73,23 @@ func getFolderName(path string) string {
 	return strings.Replace(f, currentPath, currentBase, 1)
 }
 
-func getFolderNameByDepth(path string, depth int) string {
-	f := filepath.Dir(path)
-	sep := string(os.PathSeparator)
-	tmp := strings.Split(f, sep)
-	d := len(tmp)
-	if d <= depth {
-		return f
-	}
-	f = ""
-	for i := depth; i > 0; i-- {
-		f += tmp[d-i]
-		if i > 1 {
-			f += sep
-		}
-	}
-	return f
-}
+// func getFolderNameByDepth(path string, depth int) string {
+// 	f := filepath.Dir(path)
+// 	sep := string(os.PathSeparator)
+// 	tmp := strings.Split(f, sep)
+// 	d := len(tmp)
+// 	if d <= depth {
+// 		return f
+// 	}
+// 	f = ""
+// 	for i := depth; i > 0; i-- {
+// 		f += tmp[d-i]
+// 		if i > 1 {
+// 			f += sep
+// 		}
+// 	}
+// 	return f
+// }
 
 func generateMovies() error {
 	startingCounter := len(pageData.MovieList)
