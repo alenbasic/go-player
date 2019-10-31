@@ -1,19 +1,18 @@
 {{define "content"}}
 <script src=" ../static/js/tablesearch.js"></script>
 
+<h2><a href="/movie?movie={{.CurrentFilm}}">This film</a> is currently playing!</h2>
+
 <form onkeyup="searchTable()" style="padding-bottom:10px" align="left" action = "/" method = "post">
 		<input type="text" id="search" placeholder="Type to search">
         <input type="submit" name="refresh" value="Refresh File List" />
-        <a class="button green" href="/?grp=f">Show Folders</a>
+        <a href="/?grp=f">Show Folders</a>
 </form>
 
 <table id="omx-table">
 {{range $index, $file := .MovieList}}
-{{if mod $index 2}}
-    <tr><td><small><a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a></small></td><td>
-{{ else }}
+    <tr><td><small>{{.Folder}}</small></td><td>
     <small><a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a></small></td></tr>
-{{ end }}
 {{end}}
 </tr>
 </table>

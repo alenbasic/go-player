@@ -6,7 +6,7 @@
 }
 
 .wrapper .container {
-    max-width: 80rem
+    max-width: 90%;
 }
 
 .wrapper>.container {
@@ -18,7 +18,7 @@
     background: #f4f5f6;
     border-bottom: .1rem solid #d1d1d1;
     display: block;
-    height: 5.2rem;
+    height: 4rem;
     left: 0;
     max-width: 100%;
     position: fixed;
@@ -59,7 +59,7 @@
     display: inline;
     padding: 0;
     text-decoration: none;
-    line-height: 5.2rem;
+    line-height: 4rem;
 }
 
 .navigation .navigation-link {

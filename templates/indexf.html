@@ -4,16 +4,19 @@
 <form onkeyup="searchTable()" style="padding-bottom:10px" align="left" action = "/" method = "post">
 		<input type="text" id="search" placeholder="Type to search">
         <input type="submit" name="refresh" value="Refresh File List" />
-        <a class="button green" href="/?grp=f">Show Folders</a>
+        <a class="button grey" href="/?grp=">Hide Folders</a>
 </form>
 
 <table id="omx-table">
+{{$prev := ""}}
 {{range $index, $file := .MovieList}}
-{{if mod $index 2}}
-    <tr><td><small><a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a></small></td><td>
-{{ else }}
+    {{if eq $prev .Folder}}
+    <tr><td><small>&nbsp;</small></td><td>
+    {{else}}
+    <tr><td>{{.Folder}}</td><td>
+    {{end}}
     <small><a href="/movie?movie={{.FullFilePath}}">{{.FileName}}</a></small></td></tr>
-{{ end }}
+    {{$prev = .Folder}}
 {{end}}
 </tr>
 </table>
