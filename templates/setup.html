@@ -1,12 +1,13 @@
 {{define "content"}}
 <h2>Setup</h2>
-<p>Welcome to the setup page! Please enter the path to your media files so that go-player can start looking for your files. 
-If you move your files or want to change to a different directory, 
+<p>Welcome to the setup page! Please enter the path to your media files so that go-player can start looking for your files.
+If you move your files or want to change to a different directory,
 just come back to this page via the navbar at top and enter in a new location.</p>
 
 <form style="padding-bottom:10px" align="<center></center>" action = "/setup" method = "post">
 		<input type="text" name="filepath" id="search" placeholder="/path/to/media">
         <input type="submit" name="addFilePath" value="Submit" />
+        <input type="submit" name="saveSetup" value="Save Settings" />
 <p></p>
 <table>
 {{range $index, $filePath := .FilePathList}}
